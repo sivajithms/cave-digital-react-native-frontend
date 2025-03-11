@@ -12,9 +12,9 @@ const initialState: TasksState = {
 
 
 // Async thunks
-export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async (_, { rejectWithValue }) => {
+export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async (id:string | undefined, { rejectWithValue }) => {
   try {
-    return await services.fetchTasks();
+    return await services.fetchTasks({id});
   } catch (error: any) {
     return rejectWithValue(error.message);
   }

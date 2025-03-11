@@ -53,7 +53,7 @@ export default function HomeScreen() {
 
   const loadTasks = async () => {
     try {
-      await dispatch(fetchTasks()).unwrap();
+      await dispatch(fetchTasks(user?.id)).unwrap();
     } catch (error) {
       showSnackbar('Failed to load tasks');
     }
@@ -62,7 +62,7 @@ export default function HomeScreen() {
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      await dispatch(fetchTasks()).unwrap();
+      await dispatch(fetchTasks(user?.id)).unwrap();
     } catch (error) {
       showSnackbar('Failed to refresh tasks');
     } finally {
