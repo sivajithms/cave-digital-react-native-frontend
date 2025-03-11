@@ -20,6 +20,7 @@
     "@reduxjs/toolkit": "^2.6.0",
     "@shopify/flash-list": "*",
     "@supabase/supabase-js": "*",
+    "axios": "^1.8.2",
     "expo": "~52.0.33",
     "expo-auth-session": "*",
     "expo-av": "*",

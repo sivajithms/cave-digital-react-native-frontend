@@ -2,6 +2,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { AuthState, User } from '../types';
 import { storeToken, storeUser, clearAuth, getToken, getUser } from '../utils/storage';
+import { services } from '../API/api';
 
 // Initial state
 const initialState: AuthState = {
@@ -11,46 +12,12 @@ const initialState: AuthState = {
   error: null,
 };
 
-// Mock API calls
-const mockLogin = async (email: string, password: string): Promise<{ user: User; token: string }> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  // Mock validation
-  if (email !== 'user@example.com' && password !== 'password') {
-    throw new Error('Invalid credentials');
-  }
-  
-  return {
-    user: {
-      id: '1',
-      name: 'John Doe',
-      email: email,
-    },
-    token: 'mock-jwt-token',
-  };
-};
-
-const mockSignup = async (name: string, email: string, password: string): Promise<{ user: User; token: string }> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  return {
-    user: {
-      id: '1',
-      name,
-      email,
-    },
-    token: 'mock-jwt-token',
-  };
-};
-
 // Async thunks
 export const login = createAsyncThunk(
   'auth/login',
   async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
     try {
-      const response = await mockLogin(email, password);
+      const response = await services.logIn({email, password});
       await storeToken(response.token);
       await storeUser(response.user);
       return response;
@@ -64,7 +31,8 @@ export const signup = createAsyncThunk(
   'auth/signup',
   async ({ name, email, password }: { name: string; email: string; password: string }, { rejectWithValue }) => {
     try {
-      const response = await mockSignup(name, email, password);
+      const response = await services.signIn({name, email, password});
+
       await storeToken(response.token);
       await storeUser(response.user);
       return response;

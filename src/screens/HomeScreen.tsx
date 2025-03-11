@@ -84,7 +84,7 @@ export default function HomeScreen() {
   };
 
   const navigateToTaskDetails = (task: Task) => {
-    navigation.navigate('TaskDetails' as never, { taskId: task.id } as never);
+    navigation.navigate('TaskDetails' as never, { taskId: task._id } as never);
   };
 
   const handleCompleteTask = async (task: Task) => {
@@ -166,14 +166,7 @@ export default function HomeScreen() {
             ) : null}
 
             <View style={styles.taskMeta}>
-              {item.dueDate && (
-                <View style={styles.dueDateContainer}>
-                  <Feather name="calendar" size={12} color={theme.colors.textSecondary} />
-                  <Text style={styles.dueDate}>
-                    {new Date(item.dueDate).toLocaleDateString()}
-                  </Text>
-                </View>
-              )}
+
 
               <Badge
                 style={[
@@ -239,7 +232,6 @@ export default function HomeScreen() {
           anchorPosition="bottom"
         >
           <Menu.Item
-            icon="logout"
             onPress={() => {
               setMenuVisible(false);
               handleLogout();
@@ -299,11 +291,11 @@ export default function HomeScreen() {
         <FlatList
           data={[
             ...pendingTasks,
-            { id: 'divider', title: '', description: '', completed: false, priority: 'low', dueDate: null, createdAt: '', userId: '' },
+            { _id: 'divider', title: '', description: '', completed: false, priority: 'low', dueDate: null, createdAt: '', userId: '' },
             ...completedTasks,
           ]}
           renderItem={({ item, index }) => {
-            if (item.id === 'divider' && completedTasks.length > 0) {
+            if (item._id === 'divider' && completedTasks.length > 0) {
               return (
                 <View style={styles.dividerContainer}>
                   <Divider style={styles.divider} />
@@ -314,7 +306,7 @@ export default function HomeScreen() {
             }
             return renderTaskItem({ item });
           }}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item._id}
           contentContainerStyle={styles.listContent}
           ListEmptyComponent={renderEmptyList}
           refreshControl={

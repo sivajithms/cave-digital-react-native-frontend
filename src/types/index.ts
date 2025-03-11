@@ -6,7 +6,7 @@ export interface User {
 }
 
 export interface Task {
-  id: string;
+  _id: string;
   title: string;
   description: string;
   completed: boolean;
@@ -31,6 +31,8 @@ export interface TasksState {
 export type RootStackParamList = {
   Auth: undefined;
   Main: undefined;
+  AddTask: undefined; 
+  TaskDetails: undefined;
 };
 
 export type AuthStackParamList = {

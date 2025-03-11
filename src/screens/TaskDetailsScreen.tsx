@@ -44,7 +44,7 @@ export default function TaskDetailsScreen() {
   const { taskId } = route.params;
   
   const { tasks, isLoading } = useSelector((state: RootState) => state.tasks);
-  const task = tasks.find(t => t.id === taskId);
+  const task = tasks.find(t => t._id === taskId);
   
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -93,7 +93,7 @@ export default function TaskDetailsScreen() {
     if (!task) return;
     
     try {
-      await dispatch(deleteTask(task.id)).unwrap();
+      await dispatch(deleteTask(task._id)).unwrap();
       showSnackbar('Task deleted successfully');
       navigation.goBack();
     } catch (error) {
@@ -145,7 +145,6 @@ export default function TaskDetailsScreen() {
           anchorPosition='bottom'
         >
           <Menu.Item 
-            icon={isEditing ? "eye" : "pencil"} 
             onPress={() => {
               setMenuVisible(false);
               setIsEditing((prev) => !prev);
@@ -153,7 +152,6 @@ export default function TaskDetailsScreen() {
             title={isEditing ? "View Details" : "Edit Task"} 
           />
           <Menu.Item 
-            icon={completed ? "close-circle" : "check-circle"} 
             onPress={() => {
               setMenuVisible(false);
               handleToggleComplete();
@@ -162,7 +160,6 @@ export default function TaskDetailsScreen() {
           />
           <Divider />
           <Menu.Item 
-            icon="delete" 
             onPress={() => {
               setMenuVisible(false);
               setDeleteDialogVisible(true);

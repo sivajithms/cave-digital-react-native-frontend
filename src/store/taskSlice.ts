@@ -1,8 +1,7 @@
 
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { TasksState, Task } from '../types';
-import { getTasks, storeTasks } from '../utils/storage';
-import { generateMockTasks } from '../utils/mockData';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { services } from '../API/api';
+import { Task, TasksState } from '../types';
 
 // Initial state
 const initialState: TasksState = {
@@ -11,80 +10,11 @@ const initialState: TasksState = {
   error: null,
 };
 
-// Mock API calls
-const mockFetchTasks = async (): Promise<Task[]> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 800));
-  
-  // Get tasks from AsyncStorage
-  let tasks = await getTasks();
-  
-  // If no tasks exist, generate mock data
-  if (!tasks || tasks.length === 0) {
-    tasks = generateMockTasks('1');
-    await storeTasks(tasks);
-  }
-  
-  return tasks;
-};
-
-const mockCreateTask = async (task: Omit<Task, 'id' | 'createdAt'>): Promise<Task> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 800));
-  
-  // Create new task
-  const newTask: Task = {
-    ...task,
-    id: Date.now().toString(),
-    createdAt: new Date().toISOString(),
-  };
-  
-  // Get existing tasks and add new task
-  const existingTasks = await getTasks();
-  const updatedTasks = [...existingTasks, newTask];
-  
-  // Store updated tasks
-  await storeTasks(updatedTasks);
-  
-  return newTask;
-};
-
-const mockUpdateTask = async (task: Task): Promise<Task> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 800));
-  
-  // Get existing tasks
-  const existingTasks = await getTasks();
-  
-  // Update task
-  const updatedTasks = existingTasks.map(t => (t.id === task.id ? task : t));
-  
-  // Store updated tasks
-  await storeTasks(updatedTasks);
-  
-  return task;
-};
-
-const mockDeleteTask = async (taskId: string): Promise<string> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 800));
-  
-  // Get existing tasks
-  const existingTasks = await getTasks();
-  
-  // Remove task
-  const updatedTasks = existingTasks.filter(t => t.id !== taskId);
-  
-  // Store updated tasks
-  await storeTasks(updatedTasks);
-  
-  return taskId;
-};
 
 // Async thunks
 export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async (_, { rejectWithValue }) => {
   try {
-    return await mockFetchTasks();
+    return await services.fetchTasks();
   } catch (error: any) {
     return rejectWithValue(error.message);
   }
@@ -92,9 +22,12 @@ export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async (_, { rejec
 
 export const createTask = createAsyncThunk(
   'tasks/createTask',
-  async (task: Omit<Task, 'id' | 'createdAt'>, { rejectWithValue }) => {
+  async (task: Omit<Task, '_id' | 'createdAt'>, { rejectWithValue }) => {
     try {
-      return await mockCreateTask(task);
+      const data = await services.createTasks(task);
+      console.log('hii', data);
+
+      return data;
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
@@ -103,15 +36,17 @@ export const createTask = createAsyncThunk(
 
 export const updateTask = createAsyncThunk('tasks/updateTask', async (task: Task, { rejectWithValue }) => {
   try {
-    return await mockUpdateTask(task);
+    return await services.updateTask(task);
   } catch (error: any) {
     return rejectWithValue(error.message);
   }
 });
 
-export const deleteTask = createAsyncThunk('tasks/deleteTask', async (taskId: string, { rejectWithValue }) => {
+export const deleteTask = createAsyncThunk('tasks/deleteTask', async (_id: string, { rejectWithValue }) => {
   try {
-    return await mockDeleteTask(taskId);
+    const data = await services.deleteTask({_id});
+    console.log(data);
+    return data
   } catch (error: any) {
     return rejectWithValue(error.message);
   }
@@ -141,7 +76,7 @@ const tasksSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      
+
       // Create task
       .addCase(createTask.pending, (state) => {
         state.isLoading = true;
@@ -155,7 +90,7 @@ const tasksSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      
+
       // Update task
       .addCase(updateTask.pending, (state) => {
         state.isLoading = true;
@@ -163,7 +98,7 @@ const tasksSlice = createSlice({
       })
       .addCase(updateTask.fulfilled, (state, action: PayloadAction<Task>) => {
         state.isLoading = false;
-        const index = state.tasks.findIndex(task => task.id === action.payload.id);
+        const index = state.tasks.findIndex(task => task._id === action.payload._id);
         if (index !== -1) {
           state.tasks[index] = action.payload;
         }
@@ -172,7 +107,7 @@ const tasksSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      
+
       // Delete task
       .addCase(deleteTask.pending, (state) => {
         state.isLoading = true;
@@ -180,7 +115,7 @@ const tasksSlice = createSlice({
       })
       .addCase(deleteTask.fulfilled, (state, action: PayloadAction<string>) => {
         state.isLoading = false;
-        state.tasks = state.tasks.filter(task => task.id !== action.payload);
+        state.tasks = state.tasks.filter(task => task._id !== action.payload);
       })
       .addCase(deleteTask.rejected, (state, action) => {
         state.isLoading = false;

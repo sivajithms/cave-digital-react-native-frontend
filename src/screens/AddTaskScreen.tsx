@@ -38,7 +38,7 @@ export default function AddTaskScreen() {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   
-  const titleError = title.length ? 'Title is required' : '';
+  const titleError = title.length === 0 ? 'Title is required' : '';
 
   const getSelectedPriorityStyle = (color: string) => ({
     backgroundColor: color,
@@ -46,15 +46,15 @@ export default function AddTaskScreen() {
     borderColor: color,
     borderRadius: theme.borderRadius.sm,
   });
-  
-  
+
+
   const handleCreateTask = async () => {
     if (titleError) {
       showSnackbar('Please fix the errors in the form');
       return;
     }
-    
-    try {
+
+    try {      
       await dispatch(createTask({
         title,
         description,
@@ -102,6 +102,7 @@ export default function AddTaskScreen() {
                 style={styles.input}
                 outlineColor={theme.colors.border}
                 activeOutlineColor={theme.colors.primary}
+                textColor = {theme.colors.text}
                 theme={{ colors: { placeholder: theme.colors.textSecondary, text: theme.colors.text, background: theme.colors.background } }}
               />
               {titleError ? <HelperText type="error">{titleError}</HelperText> : null}
@@ -118,6 +119,7 @@ export default function AddTaskScreen() {
                 style={styles.textArea}
                 outlineColor={theme.colors.border}
                 activeOutlineColor={theme.colors.primary}
+                textColor = {theme.colors.text}
                 theme={{ colors: { placeholder: theme.colors.textSecondary, text: theme.colors.text, background: theme.colors.background } }}
               />
             </View>

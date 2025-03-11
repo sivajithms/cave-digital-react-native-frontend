@@ -52,6 +52,8 @@ export default function SignupScreen() {
     }
 
     try {
+      console.log('ivda ethi');
+      
       await dispatch(signup({ name, email, password })).unwrap();
       // Navigation will be handled by the auth state change in App.tsx
     } catch (error) {

@@ -23,13 +23,3 @@ export const getUser = async (): Promise<User | null> => {
 export const clearAuth = async (): Promise<void> => {
   await AsyncStorage.multiRemove(['auth_token', 'user']);
 };
-
-// Task storage
-export const storeTasks = async (tasks: Task[]): Promise<void> => {
-  await AsyncStorage.setItem('tasks', JSON.stringify(tasks));
-};
-
-export const getTasks = async (): Promise<Task[]> => {
-  const tasksData = await AsyncStorage.getItem('tasks');
-  return tasksData ? JSON.parse(tasksData) : [];
-};
