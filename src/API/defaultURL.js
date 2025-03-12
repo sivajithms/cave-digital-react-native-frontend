@@ -1,3 +1,3 @@
 export const URL = {
-    server: "https://vercel.com/sivajithms-projects/cave-digital-todo-backend/B9VhrGsjnyAvfcfMxvZQuRkhWk8U"
+    server: "https://cave-digital-todo-backend-1vwfebowb-sivajithms-projects.vercel.app/"
 }
